@@ -11,4 +11,6 @@ public interface ExcepcionRepository extends JpaRepository<Excepcion, Long> {
     List<Excepcion> findByProfesionalIdAndFecha(Long profesionalId, LocalDate fecha);
 
     List<Excepcion> findByProfesionalIdAndFechaBetween(Long profesionalId, LocalDate desde, LocalDate hasta);
+
+    List<Excepcion> findByProfesionalId(Long profesionalId);
 }
