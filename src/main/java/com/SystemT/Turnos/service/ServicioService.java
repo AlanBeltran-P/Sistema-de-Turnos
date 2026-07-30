@@ -70,4 +70,11 @@ public class ServicioService {
         return profesionalRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Profesional no encontrado"));
     }
+
+    public List<ServicioResponse> listarPublicos(String slug) {
+        return servicioRepository.findByProfesional_SlugAndActivoTrue(slug)
+                .stream()
+                .map(servicioMapper::toResponse)
+                .toList();
+    }
 }
