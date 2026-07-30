@@ -14,4 +14,6 @@ public interface ServicioRepository extends JpaRepository<Servicio,Long> {
 
     List<Servicio> findByProfesional_SlugAndActivoTrue(String slug);
 
+    Optional<Servicio> findByPublicIdAndProfesional_SlugAndActivoTrue(UUID publicId, String slug);
+
 }
