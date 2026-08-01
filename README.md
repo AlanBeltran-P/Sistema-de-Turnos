@@ -122,6 +122,6 @@ Para los endpoints privados, usá el botón **Authorize** en Swagger UI pegando 
 
 ## Autor
 
-Alan — [GitHub](https://github.com/tu-usuario)
+Alan — [GitHub](https://github.com/AlanBeltran-P)
 
 Proyecto desarrollado como parte de un portafolio backend, con foco en autenticación JWT, control de concurrencia, y diseño de APIs REST con separación clara entre recursos públicos y privados.
