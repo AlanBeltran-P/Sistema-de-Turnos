@@ -32,4 +32,5 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
             "AND t.fechaHoraInicio < :hasta AND t.fechaHoraFin > :desde " +
             "AND t.estado <> 'CANCELADO'")
     List<Turno> findOcupadosEnRango(Long profesionalId, LocalDateTime desde, LocalDateTime hasta);
+
 }

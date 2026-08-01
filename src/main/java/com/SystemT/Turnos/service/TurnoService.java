@@ -1,6 +1,7 @@
 package com.SystemT.Turnos.service;
 
 import com.SystemT.Turnos.Dto.Turno.ReservaRequest;
+import com.SystemT.Turnos.Dto.Turno.TurnoAgendaResponse;
 import com.SystemT.Turnos.Dto.Turno.TurnoResponse;
 import com.SystemT.Turnos.Entity.EstadoTurno;
 import com.SystemT.Turnos.Entity.Profesional;
@@ -12,10 +13,13 @@ import com.SystemT.Turnos.Repository.ProfesionalRepository;
 import com.SystemT.Turnos.Repository.ServicioRepository;
 import com.SystemT.Turnos.Repository.TurnoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,6 +84,45 @@ public class TurnoService {
                 turno.getFechaHoraFin(),
                 turno.getEstado(),
                 turno.getCancelacionToken()
+        );
+    }
+
+    public List<TurnoAgendaResponse> verAgenda(String emailProfesional, LocalDate desde, LocalDate hasta) {
+        Profesional profesional = profesionalRepository.findByEmail(emailProfesional)
+                .orElseThrow(() -> new ResourceNotFoundException("Profesional no encontrado"));
+
+        LocalDateTime inicio = desde.atStartOfDay();
+        LocalDateTime fin = hasta.atTime(LocalTime.MAX);
+
+        return turnoRepository.findByProfesionalIdAndFechaHoraInicioBetween(profesional.getId(), inicio, fin)
+                .stream()
+                .map(this::toAgendaResponse)
+                .toList();
+    }
+
+    @Transactional
+    public void cambiarEstado(String emailProfesional, UUID publicId, EstadoTurno nuevoEstado) {
+        Turno turno = turnoRepository.findByPublicId(publicId)
+                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado"));
+
+        if (!turno.getProfesional().getEmail().equals(emailProfesional)) {
+            throw new AccessDeniedException("No tenés permiso para modificar este turno");
+        }
+
+        turno.setEstado(nuevoEstado);
+        turnoRepository.save(turno);
+    }
+
+    private TurnoAgendaResponse toAgendaResponse(Turno turno) {
+        return new TurnoAgendaResponse(
+                turno.getPublicId(),
+                turno.getServicio().getNombre(),
+                turno.getClienteNombre(),
+                turno.getClienteTelefono(),
+                turno.getClienteEmail(),
+                turno.getFechaHoraInicio(),
+                turno.getFechaHoraFin(),
+                turno.getEstado()
         );
     }
 }
